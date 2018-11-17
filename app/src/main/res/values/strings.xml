@@ -7,4 +7,7 @@
     <string name="accessDeniedToastText">Введенные данные неккоректны</string>
     <string name="email_name">Email</string>
     <string name="password_text">Password</string>
+    <string name="newLoginHint">Логин</string>
+    <string name="etNewPassword">Пароль</string>
+    <string name="etConfirmPassword">Повторите пароль</string>
 </resources>
