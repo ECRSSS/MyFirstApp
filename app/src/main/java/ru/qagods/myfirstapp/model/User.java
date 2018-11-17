@@ -1,6 +1,7 @@
 package ru.qagods.myfirstapp.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class User implements Serializable {
     private String mLogin;
@@ -26,5 +27,20 @@ public class User implements Serializable {
 
     public void setmLogin(String mLogin) {
         this.mLogin = mLogin;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return mLogin.equalsIgnoreCase(user.mLogin) &&
+                Objects.equals(mPassword, user.mPassword);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(mLogin, mPassword);
     }
 }

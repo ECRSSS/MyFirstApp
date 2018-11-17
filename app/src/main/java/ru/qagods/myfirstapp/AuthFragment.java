@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -49,7 +50,10 @@ public class AuthFragment extends Fragment {
     private View.OnClickListener mOnClickRegisterButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            //todo Обработать нажатие
+            FragmentManager fragmentManager=getActivity().getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.fragment_container,RegistrationFragment.newInstance())
+                    //.addToBackStack(null)
+                    .commit();
         }
     };
 

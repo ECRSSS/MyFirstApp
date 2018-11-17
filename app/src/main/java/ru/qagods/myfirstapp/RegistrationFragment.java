@@ -1,7 +1,6 @@
 package ru.qagods.myfirstapp;
 
 import android.os.Bundle;
-import android.os.PatternMatcher;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -15,18 +14,29 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import ru.qagods.myfirstapp.model.User;
+import ru.qagods.myfirstapp.utils.SharedPreferencesHelper;
+
 public class RegistrationFragment extends Fragment {
 
     private EditText mNewLogin;
     private EditText mNewPassword;
     private EditText mRepeatPassword;
     private Button mRegistrationButton;
+    private SharedPreferencesHelper mSharedPreferencesHelper;
 
     private View.OnClickListener onClickRegisterListener=new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if(isInputValid()){
-
+               boolean isUserAddedCorrectly = mSharedPreferencesHelper.addUser(new User(mNewLogin.getText().toString()
+                        ,mNewPassword.getText().toString()));
+               if(isUserAddedCorrectly)
+                   showMessage(R.string.userAddedeSuccessfully);
+               else
+                   showMessage(R.string.userDontAdded);
+            }else {
+                showMessage(R.string.accessDeniedToastText);
             }
         }
     };
@@ -44,13 +54,17 @@ public class RegistrationFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v=inflater.inflate(R.layout.fr_registration,container);
+        mSharedPreferencesHelper=new SharedPreferencesHelper(getActivity());
         mNewLogin=v.findViewById(R.id.etNewLogin);
         mNewPassword=v.findViewById(R.id.etNewPassword);
         mRepeatPassword=v.findViewById(R.id.etConfirmPassword);
-        mRegistrationButton=v.findViewById(R.id.buttonRegister);
+        mRegistrationButton=v.findViewById(R.id.btnRegisterUser);
+        mRegistrationButton.setOnClickListener(onClickRegisterListener);
 
         return super.onCreateView(inflater, container, savedInstanceState);
     }
+
+
 
     private boolean isInputValid(){
         return isValidLogin() && isValidPassword();
