@@ -9,9 +9,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import ru.qagods.myfirstapp.model.User;
+
 public class ProfileActivity extends AppCompatActivity {
-    public static String EMAIL_KEY = "EMAIL_KEY";
-    public static String PASSWORD_KEY = "PASSWORD_KEY";
+    public static String USER_KEY = "USER_KEY";
 
     private AppCompatImageView mProfileImage;
     private TextView mLogin;
@@ -35,11 +36,10 @@ public class ProfileActivity extends AppCompatActivity {
         mPassword = findViewById(R.id.tvPassword);
 
         Bundle extras = getIntent().getExtras();
-        String email = extras.getString(EMAIL_KEY);
-        String password = extras.getString(PASSWORD_KEY);
+        User user = (User) extras.getSerializable(USER_KEY);
 
-        mLogin.setText(email);
-        mPassword.setText(password);
+        mLogin.setText(user.getmLogin());
+        mPassword.setText(user.getmPassword());
 
         mProfileImage.setOnClickListener(mOnPhotoClickListener);
     }

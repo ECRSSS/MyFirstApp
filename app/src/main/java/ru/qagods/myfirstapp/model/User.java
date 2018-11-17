@@ -1,6 +1,8 @@
 package ru.qagods.myfirstapp.model;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private String mLogin;
     private String mPassword;
 

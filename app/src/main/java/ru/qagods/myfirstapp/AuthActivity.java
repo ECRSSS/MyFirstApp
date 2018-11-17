@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import ru.qagods.myfirstapp.model.User;
+
 public class AuthActivity extends AppCompatActivity {
 
     private EditText mLoginField;
@@ -24,8 +26,8 @@ public class AuthActivity extends AppCompatActivity {
         public void onClick(View v) {
             if(isEmailValid() && isPasswordValid()){
                 Intent startProfileActivityIntent=new Intent(AuthActivity.this,ProfileActivity.class);
-                startProfileActivityIntent.putExtra(ProfileActivity.EMAIL_KEY,mLoginField.getText().toString());
-                startProfileActivityIntent.putExtra(ProfileActivity.PASSWORD_KEY,mPasswordField.getText().toString());
+                User user=new User(mLoginField.getText().toString(),mPasswordField.getText().toString());
+                startProfileActivityIntent.putExtra(ProfileActivity.USER_KEY,user);
                 startActivity(startProfileActivityIntent);
             }else{
                 showMessage(R.string.accessDeniedToastText);
