@@ -1,5 +1,6 @@
 package ru.qagods.myfirstapp;
 
+import android.content.Intent;
 import android.os.PatternMatcher;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
@@ -22,7 +23,10 @@ public class AuthActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             if(isEmailValid() && isPasswordValid()){
-                //переход в приложение
+                Intent startProfileActivityIntent=new Intent(AuthActivity.this,ProfileActivity.class);
+                startProfileActivityIntent.putExtra(ProfileActivity.EMAIL_KEY,mLoginField.getText().toString());
+                startProfileActivityIntent.putExtra(ProfileActivity.PASSWORD_KEY,mPasswordField.getText().toString());
+                startActivity(startProfileActivityIntent);
             }else{
                 showMessage(R.string.accessDeniedToastText);
             }
