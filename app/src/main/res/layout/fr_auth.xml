@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_height="match_parent">
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/login"
         android:hint="@string/login_hint"
         android:layout_marginLeft="8dp"

@@ -46,4 +46,20 @@ public class SharedPreferencesHelper {
             return true;
         }
     }
+
+    public boolean login(User user){
+        ArrayList<User> users=(ArrayList<User>) getUsers();
+        if(users.contains(user)){
+            return true;
+        }else
+            return false;
+    }
+
+    public List<String> getSuccessLogins() {
+        ArrayList<String> logins=new ArrayList<>();
+        for(User user : getUsers()){
+                logins.add(user.getmLogin());
+        }
+        return logins;
+    }
 }

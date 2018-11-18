@@ -13,4 +13,5 @@
     <string name="userAddedeSuccessfully">Пользователь добавился успешно</string>
     <string name="userDontAdded">Такой пользователь уже существует</string>
     <string name="loginError">Ошибка логина</string>
+    <string name="profile_menu_title">Логаут</string>
 </resources>

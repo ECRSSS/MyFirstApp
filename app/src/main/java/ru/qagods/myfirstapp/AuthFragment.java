@@ -12,6 +12,8 @@ import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -21,11 +23,13 @@ import ru.qagods.myfirstapp.utils.SharedPreferencesHelper;
 
 public class AuthFragment extends Fragment {
 
-    private EditText mLoginField;
+    private AutoCompleteTextView mLoginField;
     private EditText mPasswordField;
     private Button mEnterButton;
     private Button mRegisterButton;
     private SharedPreferencesHelper mSharedPreferencesHelper;
+
+    private ArrayAdapter<String> mLoginedUsers;
 
     public static AuthFragment newInstance() {
 
@@ -36,17 +40,25 @@ public class AuthFragment extends Fragment {
         return fragment;
     }
 
+    private View.OnFocusChangeListener mOnLoginFocusListener=new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            if(hasFocus){
+                mLoginField.showDropDown();
+            }
+        }
+    };
+
+
     private View.OnClickListener mOnClickEnterButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            boolean isLoginSuccess = false;
             User user = new User(mLoginField.getText().toString(), mPasswordField.getText().toString());
-            if (mSharedPreferencesHelper.getUsers().contains(user)) {
-                isLoginSuccess = true;
-                    Intent startProfileActivityIntent = new Intent(getActivity(), ProfileActivity.class);
-                    startProfileActivityIntent.putExtra(ProfileActivity.USER_KEY, user);
-                    startActivity(startProfileActivityIntent);
-            }else{
+            if (mSharedPreferencesHelper.login(user)) {
+                Intent startProfileActivityIntent = new Intent(getActivity(), ProfileActivity.class);
+                startProfileActivityIntent.putExtra(ProfileActivity.USER_KEY, user);
+                startActivity(startProfileActivityIntent);
+            } else {
                 showMessage(R.string.loginError);
             }
         }
@@ -67,13 +79,22 @@ public class AuthFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fr_auth, container, false);
         mSharedPreferencesHelper = new SharedPreferencesHelper(getActivity());
+
+        mLoginedUsers = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_dropdown_item_1line,
+                mSharedPreferencesHelper.getSuccessLogins());
+
         mLoginField = v.findViewById(R.id.login);
+        mLoginField.setAdapter(mLoginedUsers);
+        mLoginField.setOnFocusChangeListener(mOnLoginFocusListener);
+
         mPasswordField = v.findViewById(R.id.password);
         mEnterButton = v.findViewById(R.id.buttonEnter);
         mRegisterButton = v.findViewById(R.id.buttonRegister);
 
         mEnterButton.setOnClickListener(mOnClickEnterButtonListener);
         mRegisterButton.setOnClickListener(mOnClickRegisterButtonListener);
+
         return v;
     }
 
