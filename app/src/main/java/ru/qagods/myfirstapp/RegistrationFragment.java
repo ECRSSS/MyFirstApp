@@ -31,8 +31,10 @@ public class RegistrationFragment extends Fragment {
             if(isInputValid()){
                boolean isUserAddedCorrectly = mSharedPreferencesHelper.addUser(new User(mNewLogin.getText().toString()
                         ,mNewPassword.getText().toString()));
-               if(isUserAddedCorrectly)
+               if(isUserAddedCorrectly) {
                    showMessage(R.string.userAddedeSuccessfully);
+                   getFragmentManager().popBackStack();
+               }
                else
                    showMessage(R.string.userDontAdded);
             }else {

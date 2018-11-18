@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import ru.qagods.myfirstapp.model.User;
+import ru.qagods.myfirstapp.utils.SharedPreferencesHelper;
 
 public class AuthFragment extends Fragment {
 
@@ -24,11 +25,12 @@ public class AuthFragment extends Fragment {
     private EditText mPasswordField;
     private Button mEnterButton;
     private Button mRegisterButton;
+    private SharedPreferencesHelper mSharedPreferencesHelper;
 
     public static AuthFragment newInstance() {
-        
+
         Bundle args = new Bundle();
-        
+
         AuthFragment fragment = new AuthFragment();
         fragment.setArguments(args);
         return fragment;
@@ -37,22 +39,24 @@ public class AuthFragment extends Fragment {
     private View.OnClickListener mOnClickEnterButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (isEmailValid() && isPasswordValid()) {
-                Intent startProfileActivityIntent = new Intent(getActivity(), ProfileActivity.class);
-                User user = new User(mLoginField.getText().toString(), mPasswordField.getText().toString());
-                startProfileActivityIntent.putExtra(ProfileActivity.USER_KEY, user);
-                startActivity(startProfileActivityIntent);
-            } else {
-                showMessage(R.string.accessDeniedToastText);
+            boolean isLoginSuccess = false;
+            User user = new User(mLoginField.getText().toString(), mPasswordField.getText().toString());
+            if (mSharedPreferencesHelper.getUsers().contains(user)) {
+                isLoginSuccess = true;
+                    Intent startProfileActivityIntent = new Intent(getActivity(), ProfileActivity.class);
+                    startProfileActivityIntent.putExtra(ProfileActivity.USER_KEY, user);
+                    startActivity(startProfileActivityIntent);
+            }else{
+                showMessage(R.string.loginError);
             }
         }
     };
     private View.OnClickListener mOnClickRegisterButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            FragmentManager fragmentManager=getActivity().getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.fragment_container,RegistrationFragment.newInstance())
-                    //.addToBackStack(null)
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.fragment_container, RegistrationFragment.newInstance())
+                    .addToBackStack(RegistrationFragment.class.getName())
                     .commit();
         }
     };
@@ -62,7 +66,7 @@ public class AuthFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fr_auth, container, false);
-
+        mSharedPreferencesHelper = new SharedPreferencesHelper(getActivity());
         mLoginField = v.findViewById(R.id.login);
         mPasswordField = v.findViewById(R.id.password);
         mEnterButton = v.findViewById(R.id.buttonEnter);

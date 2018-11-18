@@ -19,4 +19,14 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
     }
 
     public abstract Fragment getFragment();
+
+    @Override
+    public void onBackPressed() {
+        FragmentManager fragmentManager=getSupportFragmentManager();
+        if(fragmentManager.getBackStackEntryCount()==0){
+            finish();
+        }else{
+            fragmentManager.popBackStackImmediate();
+        }
+    }
 }

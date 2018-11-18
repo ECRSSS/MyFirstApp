@@ -9,8 +9,4 @@ public class AuthActivity extends SingleFragmentActivity {
         return AuthFragment.newInstance();
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
 }

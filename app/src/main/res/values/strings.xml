@@ -12,4 +12,5 @@
     <string name="etConfirmPassword">Повторите пароль</string>
     <string name="userAddedeSuccessfully">Пользователь добавился успешно</string>
     <string name="userDontAdded">Такой пользователь уже существует</string>
+    <string name="loginError">Ошибка логина</string>
 </resources>
