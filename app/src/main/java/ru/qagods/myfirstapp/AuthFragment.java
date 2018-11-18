@@ -54,8 +54,8 @@ public class AuthFragment extends Fragment {
     private View.OnClickListener mOnClickRegisterButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.fragment_container, RegistrationFragment.newInstance())
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, RegistrationFragment.newInstance())
                     .addToBackStack(RegistrationFragment.class.getName())
                     .commit();
         }

@@ -55,7 +55,7 @@ public class RegistrationFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v=inflater.inflate(R.layout.fr_registration,container);
+        View v=inflater.inflate(R.layout.fr_registration,container,false);
         mSharedPreferencesHelper=new SharedPreferencesHelper(getActivity());
         mNewLogin=v.findViewById(R.id.etNewLogin);
         mNewPassword=v.findViewById(R.id.etNewPassword);
@@ -63,7 +63,7 @@ public class RegistrationFragment extends Fragment {
         mRegistrationButton=v.findViewById(R.id.btnRegisterUser);
         mRegistrationButton.setOnClickListener(onClickRegisterListener);
 
-        return super.onCreateView(inflater, container, savedInstanceState);
+        return v;
     }
 
 
