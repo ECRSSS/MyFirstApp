@@ -53,8 +53,8 @@ public class AuthFragment extends Fragment {
     private View.OnClickListener mOnClickEnterButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            User user = new User(mLoginField.getText().toString(), mPasswordField.getText().toString());
-            if (mSharedPreferencesHelper.login(user)) {
+            User user = mSharedPreferencesHelper.login(mLoginField.getText().toString(),mPasswordField.getText().toString());
+            if (user!=null) {
                 Intent startProfileActivityIntent = new Intent(getActivity(), ProfileActivity.class);
                 startProfileActivityIntent.putExtra(ProfileActivity.USER_KEY, user);
                 startActivity(startProfileActivityIntent);

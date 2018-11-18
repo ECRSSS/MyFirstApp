@@ -1,6 +1,8 @@
 package ru.qagods.myfirstapp;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.ImageViewCompat;
@@ -16,7 +18,8 @@ import android.widget.TextView;
 import ru.qagods.myfirstapp.model.User;
 
 public class ProfileActivity extends AppCompatActivity {
-    public static String USER_KEY = "USER_KEY";
+    public static final String USER_KEY = "USER_KEY";
+    public static final int REQUEST_GALLERY_CODE = 203;
 
     private AppCompatImageView mProfileImage;
     private TextView mLogin;
@@ -26,10 +29,25 @@ public class ProfileActivity extends AppCompatActivity {
     private View.OnClickListener mOnPhotoClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            //todo
+            openGallery();
         }
     };
 
+    private void openGallery() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, REQUEST_GALLERY_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == REQUEST_GALLERY_CODE && resultCode == Activity.RESULT_OK && data != null) {
+            Uri photoUri = data.getData();
+            mProfileImage.setImageURI(photoUri);
+        } else
+            super.onActivityResult(requestCode, resultCode, data);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,7 +77,7 @@ public class ProfileActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.actionLogout:
-                startActivity(new Intent(this,AuthActivity.class));
+                startActivity(new Intent(this, AuthActivity.class));
                 finish();
                 break;
             default:

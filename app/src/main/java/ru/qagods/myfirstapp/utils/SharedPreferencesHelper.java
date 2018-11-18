@@ -47,12 +47,14 @@ public class SharedPreferencesHelper {
         }
     }
 
-    public boolean login(User user){
+    public User login(String login,String password){
         ArrayList<User> users=(ArrayList<User>) getUsers();
-        if(users.contains(user)){
-            return true;
-        }else
-            return false;
+        for(User user : users){
+            if(user.getmLogin().equalsIgnoreCase(login) && user.getmPassword().equals(password)){
+                return user;
+            }
+        }
+        return null;
     }
 
     public List<String> getSuccessLogins() {
