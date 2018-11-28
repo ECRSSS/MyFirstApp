@@ -14,4 +14,7 @@
     <string name="userDontAdded">Такой пользователь уже существует</string>
     <string name="loginError">Ошибка логина</string>
     <string name="profile_menu_title">Логаут</string>
+    <string name="et_name_hint">Имя</string>
+    <string name="enqueue_error">Ошибка запроса</string>
+    <string name="name">Name</string>
 </resources>

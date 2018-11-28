@@ -1,6 +1,7 @@
 package ru.qagods.myfirstapp;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -14,82 +15,115 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+
+import okhttp3.MediaType;
 import ru.qagods.myfirstapp.model.User;
-import ru.qagods.myfirstapp.utils.SharedPreferencesHelper;
+import ru.qagods.myfirstapp.utils.ApiUtils;
 
 public class RegistrationFragment extends Fragment {
 
-    private EditText mNewLogin;
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf8");
+
+    private EditText mNewEmail;
+    private EditText mNewName;
     private EditText mNewPassword;
     private EditText mRepeatPassword;
     private Button mRegistrationButton;
-    private SharedPreferencesHelper mSharedPreferencesHelper;
 
-    private View.OnClickListener onClickRegisterListener=new View.OnClickListener() {
+    private View.OnClickListener onClickRegisterListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if(isInputValid()){
-               boolean isUserAddedCorrectly = mSharedPreferencesHelper.addUser(new User(mNewLogin.getText().toString()
-                        ,mNewPassword.getText().toString()));
-               if(isUserAddedCorrectly) {
-                   showMessage(R.string.userAddedeSuccessfully);
-                   getFragmentManager().popBackStack();
-               }
-               else
-                   showMessage(R.string.userDontAdded);
-            }else {
-                showMessage(R.string.accessDeniedToastText);
+            if (isInputValid()) {
+                User user = new User(mNewEmail.getText().toString(), mNewName.getText().toString()
+                        , mNewPassword.getText().toString());
+                ApiUtils.getApi().registration(user).enqueue(new retrofit2.Callback<Void>() {
+                    Handler handler=new Handler(getActivity().getMainLooper());
+                    @Override
+                    public void onResponse(retrofit2.Call<Void> call, final retrofit2.Response<Void> response) {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(response.isSuccessful()){
+                                        showMessage("Регистрация прошла успешно");
+                                        getFragmentManager().popBackStack();
+                                    }else {
+                                        showMessage("Ошибка регистрации");
+                                    }
+
+                                }
+                            });
+                    }
+
+                    @Override
+                    public void onFailure(retrofit2.Call<Void> call, Throwable t) {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                showMessage("Ошибка запроса");
+                            }
+                        });
+                    }
+                });
+
             }
+        }};
+
+
+        public static RegistrationFragment newInstance() {
+
+            Bundle args = new Bundle();
+
+            RegistrationFragment fragment = new RegistrationFragment();
+            fragment.setArguments(args);
+            return fragment;
         }
-    };
 
-    public static RegistrationFragment newInstance() {
+        @Nullable
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            View v = inflater.inflate(R.layout.fr_registration, container, false);
+            mNewEmail = v.findViewById(R.id.etNewLogin);
+            mNewName = v.findViewById(R.id.etNewName);
+            mNewPassword = v.findViewById(R.id.etNewPassword);
+            mRepeatPassword = v.findViewById(R.id.etConfirmPassword);
+            mRegistrationButton = v.findViewById(R.id.btnRegisterUser);
+            mRegistrationButton.setOnClickListener(onClickRegisterListener);
 
-        Bundle args = new Bundle();
+            return v;
+        }
 
-        RegistrationFragment fragment = new RegistrationFragment();
-        fragment.setArguments(args);
-        return fragment;
+
+        private boolean isInputValid() {
+            return isValidLogin() && isValidPassword() && isValidName();
+        }
+
+        private boolean isValidLogin() {
+            String login = mNewEmail.getText().toString();
+            if (Patterns.EMAIL_ADDRESS.matcher(login).matches() && !TextUtils.isEmpty(login))
+                return true;
+            else
+                return false;
+        }
+
+        private boolean isValidPassword() {
+            String password = mNewPassword.getText().toString();
+            String confirmationPassword = mRepeatPassword.getText().toString();
+            if (!TextUtils.isEmpty(password) && password.equals(confirmationPassword))
+                return true;
+            else
+                return false;
+        }
+
+        private boolean isValidName() {
+            return !TextUtils.isEmpty(mNewName.getText().toString());
+        }
+
+        private void showMessage(@StringRes int string) {
+            Toast.makeText(getActivity(), string, Toast.LENGTH_SHORT).show();
+        }
+
+        private void showMessage(String string) {
+            Toast.makeText(getActivity(), string, Toast.LENGTH_SHORT).show();
+        }
+
     }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v=inflater.inflate(R.layout.fr_registration,container,false);
-        mSharedPreferencesHelper=new SharedPreferencesHelper(getActivity());
-        mNewLogin=v.findViewById(R.id.etNewLogin);
-        mNewPassword=v.findViewById(R.id.etNewPassword);
-        mRepeatPassword=v.findViewById(R.id.etConfirmPassword);
-        mRegistrationButton=v.findViewById(R.id.btnRegisterUser);
-        mRegistrationButton.setOnClickListener(onClickRegisterListener);
-
-        return v;
-    }
-
-
-
-    private boolean isInputValid(){
-        return isValidLogin() && isValidPassword();
-    }
-
-    private boolean isValidLogin(){
-        String login=mNewLogin.getText().toString();
-        if(Patterns.EMAIL_ADDRESS.matcher(login).matches() && !TextUtils.isEmpty(login))
-            return true;
-        else
-            return false;
-    }
-
-    private boolean isValidPassword(){
-        String password=mNewPassword.getText().toString();
-        String confirmationPassword=mRepeatPassword.getText().toString();
-        if(!TextUtils.isEmpty(password) && password.equals(confirmationPassword))
-            return true;
-        else
-            return false;
-    }
-
-    private void showMessage(@StringRes int string){
-        Toast.makeText(getActivity(),string,Toast.LENGTH_SHORT).show();
-    }
-}

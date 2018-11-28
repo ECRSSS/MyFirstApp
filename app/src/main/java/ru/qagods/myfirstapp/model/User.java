@@ -1,10 +1,25 @@
 package ru.qagods.myfirstapp.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.Objects;
 
 public class User implements Serializable {
+    @SerializedName("email")
     private String mLogin;
+
+    public String getmName() {
+        return mName;
+    }
+
+    public void setmName(String mName) {
+        this.mName = mName;
+    }
+
+    @SerializedName("name")
+    private String mName;
+    @SerializedName("password")
     private String mPassword;
     private boolean isLogined;
 
@@ -16,9 +31,10 @@ public class User implements Serializable {
         isLogined = logined;
     }
 
-    public User(String mLogin, String mPassword) {
+    public User(String mLogin, String mName, String mPassword) {
         this.mLogin = mLogin;
         this.mPassword = mPassword;
+        this.mName=mName;
     }
 
     public String getmPassword() {

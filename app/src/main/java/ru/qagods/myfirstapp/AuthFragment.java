@@ -1,12 +1,12 @@
 package ru.qagods.myfirstapp;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -18,8 +18,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import ru.qagods.myfirstapp.model.User;
-import ru.qagods.myfirstapp.utils.SharedPreferencesHelper;
+import ru.qagods.myfirstapp.utils.ApiUtils;
+
+import static ru.qagods.myfirstapp.RegistrationFragment.JSON;
 
 public class AuthFragment extends Fragment {
 
@@ -27,9 +40,7 @@ public class AuthFragment extends Fragment {
     private EditText mPasswordField;
     private Button mEnterButton;
     private Button mRegisterButton;
-    private SharedPreferencesHelper mSharedPreferencesHelper;
 
-    private ArrayAdapter<String> mLoginedUsers;
 
     public static AuthFragment newInstance() {
 
@@ -40,27 +51,59 @@ public class AuthFragment extends Fragment {
         return fragment;
     }
 
-    private View.OnFocusChangeListener mOnLoginFocusListener=new View.OnFocusChangeListener() {
-        @Override
-        public void onFocusChange(View v, boolean hasFocus) {
-            if(hasFocus){
-                mLoginField.showDropDown();
-            }
-        }
-    };
-
 
     private View.OnClickListener mOnClickEnterButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            User user = mSharedPreferencesHelper.login(mLoginField.getText().toString(),mPasswordField.getText().toString());
-            if (user!=null) {
-                Intent startProfileActivityIntent = new Intent(getActivity(), ProfileActivity.class);
-                startProfileActivityIntent.putExtra(ProfileActivity.USER_KEY, user);
-                startActivity(startProfileActivityIntent);
-            } else {
-                showMessage(R.string.loginError);
-            }
+            User user = null;
+
+            Request request = new Request.Builder()
+                    .url(BuildConfig.SERVER_URL.concat("user/"))
+                    .build();
+
+            OkHttpClient okHttpClient = ApiUtils.
+                    getBasicAuthClient(mLoginField.getText().toString(),
+                            mPasswordField.getText().toString(), true);
+            okHttpClient.newCall(request).enqueue(new Callback() {
+                Handler handler = new Handler(getActivity().getMainLooper());
+
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            showMessage(R.string.enqueue_error);
+                        }
+                    });
+                }
+
+                @Override
+                public void onResponse(final Call call, final Response response) throws IOException {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (response.isSuccessful()) {
+                                Gson gson = new Gson();
+                                User user = null;
+                                try {
+                                    JsonObject json = gson.fromJson(response.body().string(), JsonObject.class);
+                                    user = gson.fromJson(json.get("data"), User.class);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                Intent startProfileActivityIntent = new Intent(getActivity(), ProfileActivity.class);
+                                startProfileActivityIntent.putExtra(ProfileActivity.USER_KEY, user);
+                                startActivity(startProfileActivityIntent);
+
+                            } else {
+
+                                showMessage(R.string.loginError);
+
+                            }
+                        }
+                    });
+                }
+            });
         }
     };
     private View.OnClickListener mOnClickRegisterButtonListener = new View.OnClickListener() {
@@ -78,15 +121,8 @@ public class AuthFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fr_auth, container, false);
-        mSharedPreferencesHelper = new SharedPreferencesHelper(getActivity());
-
-        mLoginedUsers = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_dropdown_item_1line,
-                mSharedPreferencesHelper.getSuccessLogins());
 
         mLoginField = v.findViewById(R.id.login);
-        mLoginField.setAdapter(mLoginedUsers);
-        mLoginField.setOnFocusChangeListener(mOnLoginFocusListener);
 
         mPasswordField = v.findViewById(R.id.password);
         mEnterButton = v.findViewById(R.id.buttonEnter);

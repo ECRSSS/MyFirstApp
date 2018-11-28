@@ -26,6 +26,7 @@
 
         <TextView
             android:id="@+id/tvEmail"
+            android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -33,10 +34,11 @@
             android:layout_width="match_parent"
             android:gravity="center"
             android:layout_height="wrap_content"
-            android:text="@string/password_text"/>
+            android:text="@string/name"/>
 
         <TextView
-            android:id="@+id/tvPassword"
+            android:id="@+id/tvName"
+            android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
