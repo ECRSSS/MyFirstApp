@@ -2,9 +2,10 @@ package ru.qagods.myfirstapp.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Songs {
+public class Songs implements Serializable {
 
     @SerializedName("data")
     private List<DataBean> mData;
@@ -17,7 +18,7 @@ public class Songs {
         mData = data;
     }
 
-    public static class DataBean {
+    public static class DataBean implements Serializable{
         /**
          * id : 0
          * name : string

@@ -14,7 +14,7 @@ import ru.qagods.myfirstapp.model.User;
 public interface AcademyApi {
 
     @POST("registration")
-    Call<Void> registration(@Body User user);
+    Call<Void> registration(@Body User.DataBean userData);
 
     @GET("albums")
     Call<Albums> getAlbums();
@@ -23,10 +23,13 @@ public interface AcademyApi {
     Call<Album> getAlbum(@Path("id") int id);
 
     @GET("songs")
-    Call<Songs> getSongs();
+    Call<Songs.DataBean> getSongs();
 
     @GET("songs/{id}")
     Call<Song> getSong(@Path("id") int id);
+
+    @GET("user")
+    Call<User> getUser();
 
 
 }

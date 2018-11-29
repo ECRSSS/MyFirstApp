@@ -32,7 +32,8 @@ public class ApiUtils {
                 @Override
                 public Request authenticate(Route route, Response response) throws IOException {
                     String credential = Credentials.basic(email, password);
-                    return response.request().newBuilder().header("Authorization", credential).build();
+                    Request request = response.request().newBuilder().header("Authorization", credential).build();
+                    return request;
 
                 }
             }).addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
@@ -43,23 +44,23 @@ public class ApiUtils {
         return okHttpClient;
     }
 
-    public static Retrofit getRetrofit() {
+    public static Retrofit getRetrofit(final String email,final String password,boolean newInstance) {
         if(gson==null){
             gson=new Gson();
         }
-        if (retrofit == null) {
+        if (retrofit == null || newInstance == true) {
             retrofit = new Retrofit.Builder().baseUrl(BuildConfig.SERVER_URL)
                     //need for interceptors
-                    .client(getBasicAuthClient("", "", false))
+                    .client(getBasicAuthClient(email, password, newInstance))
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .build();
         }
         return retrofit;
     }
 
-    public static AcademyApi getApi(){
-        if(api==null){
-            api=getRetrofit().create(AcademyApi.class);
+    public static AcademyApi getApi(final String email,final String password,boolean newInstance){
+        if(api==null || newInstance==true){
+            api=getRetrofit(email,password,newInstance).create(AcademyApi.class);
         }
         return api;
     }

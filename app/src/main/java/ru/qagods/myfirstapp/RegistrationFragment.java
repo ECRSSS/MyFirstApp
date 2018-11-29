@@ -36,7 +36,7 @@ public class RegistrationFragment extends Fragment {
             if (isInputValid()) {
                 User user = new User(mNewEmail.getText().toString(), mNewName.getText().toString()
                         , mNewPassword.getText().toString());
-                ApiUtils.getApi().registration(user).enqueue(new retrofit2.Callback<Void>() {
+                ApiUtils.getApi("","",false).registration(user.getData()).enqueue(new retrofit2.Callback<Void>() {
                     Handler handler=new Handler(getActivity().getMainLooper());
                     @Override
                     public void onResponse(retrofit2.Call<Void> call, final retrofit2.Response<Void> response) {
@@ -44,10 +44,18 @@ public class RegistrationFragment extends Fragment {
                                 @Override
                                 public void run() {
                                     if(response.isSuccessful()){
-                                        showMessage("Регистрация прошла успешно");
-                                        getFragmentManager().popBackStack();
+                                        if(response.code()==204) {
+                                            showMessage("Успешная регистрация");
+                                            getFragmentManager().popBackStack();
+                                        }
                                     }else {
-                                        showMessage("Ошибка регистрации");
+                                        if(response.code()==400) {
+                                            showMessage("Ошибка валидации");
+                                        }else if(response.code()==500){
+                                            showMessage("Внутренняя ошибка сервера");
+                                        }else {
+                                            showMessage("Другая ошибка");
+                                        }
                                     }
 
                                 }
@@ -94,15 +102,17 @@ public class RegistrationFragment extends Fragment {
 
 
         private boolean isInputValid() {
-            return isValidLogin() && isValidPassword() && isValidName();
+            return isValidLogin() & isValidPassword() & isValidName();
         }
 
         private boolean isValidLogin() {
             String login = mNewEmail.getText().toString();
             if (Patterns.EMAIL_ADDRESS.matcher(login).matches() && !TextUtils.isEmpty(login))
                 return true;
-            else
+            else {
+                mNewEmail.setError("Неверный email");
                 return false;
+            }
         }
 
         private boolean isValidPassword() {
@@ -110,12 +120,21 @@ public class RegistrationFragment extends Fragment {
             String confirmationPassword = mRepeatPassword.getText().toString();
             if (!TextUtils.isEmpty(password) && password.equals(confirmationPassword))
                 return true;
-            else
+            else {
+                mNewPassword.setError("Пароль- минимум 8 символов, пароли должны совпадать");
+                mRepeatPassword.setError("Пароль- минимум 8 символов, пароли должны совпадать");
                 return false;
+            }
         }
 
         private boolean isValidName() {
-            return !TextUtils.isEmpty(mNewName.getText().toString());
+            boolean isNotEmpty = !TextUtils.isEmpty(mNewName.getText().toString());
+            if(isNotEmpty){
+                return true;
+            }else {
+                mNewName.setError("Имя не должно быть пустым");
+                return false;
+            }
         }
 
         private void showMessage(@StringRes int string) {

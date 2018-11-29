@@ -1,6 +1,8 @@
 package ru.qagods.myfirstapp.model;
 
-public class Song {
+import java.io.Serializable;
+
+public class Song implements Serializable {
 
     /**
      * data : {"id":0,"name":"string","duration":"string"}
@@ -16,7 +18,7 @@ public class Song {
         this.data = data;
     }
 
-    public static class DataBean {
+    public static class DataBean implements Serializable{
         /**
          * id : 0
          * name : string

@@ -58,8 +58,8 @@ public class ProfileActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         User user = (User) extras.getSerializable(USER_KEY);
 
-        mLogin.setText(user.getmLogin());
-        mName.setText(user.getmName());
+        mLogin.setText(user.getData().getEmail());
+        mName.setText(user.getData().getName());
 
         mProfileImage.setOnClickListener(mOnPhotoClickListener);
     }

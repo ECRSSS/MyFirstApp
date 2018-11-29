@@ -3,78 +3,94 @@ package ru.qagods.myfirstapp.model;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 public class User implements Serializable {
-    @SerializedName("email")
-    private String mLogin;
-
-    public String getmName() {
-        return mName;
-    }
-
-    public void setmName(String mName) {
-        this.mName = mName;
-    }
-
-    @SerializedName("name")
-    private String mName;
-    @SerializedName("password")
-    private String mPassword;
-    private boolean isLogined;
-
-    public boolean isLogined() {
-        return isLogined;
-    }
-
-    public void setLogined(boolean logined) {
-        isLogined = logined;
-    }
-
-    public User(String mLogin, String mName, String mPassword) {
-        this.mLogin = mLogin;
-        this.mPassword = mPassword;
-        this.mName=mName;
-    }
-
-    public String getmPassword() {
-        return mPassword;
-    }
-
-    public void setmPassword(String mPassword) {
-        this.mPassword = mPassword;
-    }
-
-    public String getmLogin() {
-
-        return mLogin;
-    }
-
-    public void setmLogin(String mLogin) {
-        this.mLogin = mLogin;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return mLogin.equalsIgnoreCase(user.mLogin) &&
-                Objects.equals(mPassword, user.mPassword);
-    }
-
     @Override
     public String toString() {
         return "User{" +
-                "mLogin='" + mLogin + '\'' +
-                ", mPassword='" + mPassword + '\'' +
-                ", isLogined=" + isLogined +
+                "mData=" + mData +
                 '}';
     }
 
-    @Override
-    public int hashCode() {
+    /**
+     * data : {"id":0,"name":"string","email":"string"}
+     */
 
-        return Objects.hash(mLogin, mPassword);
+    public User(String login,String name, String password){
+        mData=new DataBean();
+        mData.setEmail(login);
+        mData.setName(name);
+        mData.setmPassword(password);
+    }
+
+    @SerializedName("data")
+    private DataBean mData;
+
+    public DataBean getData() {
+        return mData;
+    }
+
+    public void setData(DataBean data) {
+        mData = data;
+    }
+
+    public static class DataBean implements Serializable {
+        @Override
+        public String toString() {
+            return "DataBean{" +
+                    "mId=" + mId +
+                    ", mName='" + mName + '\'' +
+                    ", mEmail='" + mEmail + '\'' +
+                    ", mPassword='" + mPassword + '\'' +
+                    '}';
+        }
+
+        /**
+         * id : 0
+         * name : string
+         * email : string
+         */
+
+        @SerializedName("id")
+        private int mId;
+        @SerializedName("name")
+        private String mName;
+        @SerializedName("email")
+        private String mEmail;
+        @SerializedName("password")
+        private String mPassword;
+
+        public String getmPassword() {
+            return mPassword;
+        }
+
+        public void setmPassword(String mPassword) {
+            this.mPassword = mPassword;
+        }
+
+        public int getId() {
+            return mId;
+
+        }
+
+        public void setId(int id) {
+            mId = id;
+        }
+
+        public String getName() {
+            return mName;
+        }
+
+        public void setName(String name) {
+            mName = name;
+        }
+
+        public String getEmail() {
+            return mEmail;
+        }
+
+        public void setEmail(String email) {
+            mEmail = email;
+        }
     }
 }
