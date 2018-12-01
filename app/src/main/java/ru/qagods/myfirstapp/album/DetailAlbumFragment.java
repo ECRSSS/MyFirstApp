@@ -11,17 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import ru.qagods.myfirstapp.R;
 import ru.qagods.myfirstapp.model.Album;
-import ru.qagods.myfirstapp.model.Albums;
 import ru.qagods.myfirstapp.utils.ApiUtils;
 
 public class DetailAlbumFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
@@ -30,12 +24,12 @@ public class DetailAlbumFragment extends Fragment implements SwipeRefreshLayout.
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mRefresher;
     private View mErrorView;
-    private Albums.DataBean mAlbum;
+    private Album mAlbum;
 
     @NonNull
     private final SongsAdapter mSongsAdapter = new SongsAdapter();
 
-    public static DetailAlbumFragment newInstance(Albums.DataBean album) {
+    public static DetailAlbumFragment newInstance(Album album) {
         Bundle args = new Bundle();
         args.putSerializable(ALBUM_KEY, album);
 
@@ -63,7 +57,7 @@ public class DetailAlbumFragment extends Fragment implements SwipeRefreshLayout.
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mAlbum = (Albums.DataBean) getArguments().getSerializable(ALBUM_KEY);
+        mAlbum = (Album) getArguments().getSerializable(ALBUM_KEY);
 
         getActivity().setTitle(mAlbum.getName());
 
@@ -91,7 +85,7 @@ public class DetailAlbumFragment extends Fragment implements SwipeRefreshLayout.
                 .subscribe(album -> {
                     mErrorView.setVisibility(View.GONE);
                     mRecyclerView.setVisibility(View.VISIBLE);
-                    mSongsAdapter.addData(album.getData().getSongs(), true);
+                    mSongsAdapter.addData(album.getSongs(), true);
                 }, throwable -> {
                     mErrorView.setVisibility(View.VISIBLE);
                     mRecyclerView.setVisibility(View.GONE);

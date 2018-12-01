@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import ru.qagods.myfirstapp.R;
-import ru.qagods.myfirstapp.model.Albums;
+import ru.qagods.myfirstapp.model.Album;
 
 
 public class AlbumsHolder extends RecyclerView.ViewHolder {
@@ -19,7 +19,7 @@ public class AlbumsHolder extends RecyclerView.ViewHolder {
         mReleaseDate = itemView.findViewById(R.id.tv_release_date);
     }
 
-    public void bind(Albums.DataBean item, AlbumsAdapter.OnItemClickListener onItemClickListener) {
+    public void bind(Album item, AlbumsAdapter.OnItemClickListener onItemClickListener) {
         mTitle.setText(item.getName());
         mReleaseDate.setText(item.getReleaseDate());
         if (onItemClickListener != null) {

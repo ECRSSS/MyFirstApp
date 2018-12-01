@@ -17,6 +17,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ru.qagods.myfirstapp.Api.AcademyApi;
 import ru.qagods.myfirstapp.BuildConfig;
+import ru.qagods.myfirstapp.model.converter.DataConverterFactory;
 
 public class ApiUtils {
 
@@ -53,6 +54,7 @@ public class ApiUtils {
             retrofit = new Retrofit.Builder().baseUrl(BuildConfig.SERVER_URL)
                     //need for interceptors
                     .client(getBasicAuthClient(email, password, newInstance))
+                    .addConverterFactory(new DataConverterFactory())
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .build();

@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.qagods.myfirstapp.R;
-import ru.qagods.myfirstapp.model.Albums;
+import ru.qagods.myfirstapp.model.Album;
 
 
 public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsHolder> {
 
     @NonNull
-    private final List<Albums.DataBean> mAlbums = new ArrayList<>();
+    private final List<Album> mAlbums = new ArrayList<>();
     private final OnItemClickListener mOnClickListener;
 
     public AlbumsAdapter(OnItemClickListener onClickListener) {
@@ -33,7 +33,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsHolder> {
 
     @Override
     public void onBindViewHolder(AlbumsHolder holder, int position) {
-        Albums.DataBean album = mAlbums.get(position);
+        Album album = mAlbums.get(position);
         holder.bind(album, mOnClickListener);
     }
 
@@ -42,7 +42,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsHolder> {
         return mAlbums.size();
     }
 
-    public void addData(List<Albums.DataBean> data, boolean isRefreshed) {
+    public void addData(List<Album> data, boolean isRefreshed) {
         if (isRefreshed) {
             mAlbums.clear();
         }
@@ -52,6 +52,6 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsHolder> {
     }
 
     public interface OnItemClickListener {
-        void onItemClick(Albums.DataBean album);
+        void onItemClick(Album album);
     }
 }

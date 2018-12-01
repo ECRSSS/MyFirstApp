@@ -8,23 +8,6 @@ public class Song implements Serializable {
      * data : {"id":0,"name":"string","duration":"string"}
      */
 
-    private DataBean data;
-
-    public DataBean getData() {
-        return data;
-    }
-
-    public void setData(DataBean data) {
-        this.data = data;
-    }
-
-    public static class DataBean implements Serializable{
-        /**
-         * id : 0
-         * name : string
-         * duration : string
-         */
-
         private int id;
         private String name;
         private String duration;
@@ -52,5 +35,4 @@ public class Song implements Serializable {
         public void setDuration(String duration) {
             this.duration = duration;
         }
-    }
 }

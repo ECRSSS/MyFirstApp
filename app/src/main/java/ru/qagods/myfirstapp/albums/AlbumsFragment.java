@@ -10,26 +10,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import ru.qagods.myfirstapp.R;
 import ru.qagods.myfirstapp.album.DetailAlbumFragment;
-import ru.qagods.myfirstapp.model.Albums;
 import ru.qagods.myfirstapp.utils.ApiUtils;
 
 
-/**
- * @author Azret Magometov
- */
 
 public class AlbumsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
@@ -93,7 +81,7 @@ public class AlbumsFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 .subscribe(albums -> {
                     mErrorView.setVisibility(View.GONE);
                     mRecyclerView.setVisibility(View.VISIBLE);
-                    mAlbumAdapter.addData(albums.getData(), true);
+                    mAlbumAdapter.addData(albums, true);
                 }, throwable -> {
                     mErrorView.setVisibility(View.VISIBLE);
                     mRecyclerView.setVisibility(View.GONE);
