@@ -1,5 +1,6 @@
 package ru.qagods.myfirstapp.albums;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,10 +12,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import ru.qagods.myfirstapp.R;
 import ru.qagods.myfirstapp.album.DetailAlbumFragment;
+import ru.qagods.myfirstapp.application.App;
+import ru.qagods.myfirstapp.db.MusicDao;
+import ru.qagods.myfirstapp.model.Album;
 import ru.qagods.myfirstapp.utils.ApiUtils;
 
 
@@ -70,9 +77,17 @@ public class AlbumsFragment extends Fragment implements SwipeRefreshLayout.OnRef
         });
     }
 
+    @SuppressLint("CheckResult")
     private void getAlbums() {
         ApiUtils.getApi("", "", false).getAlbums()
                 .subscribeOn(Schedulers.io())
+                .doOnSuccess(albums -> getMusicDao().insertAlbums(albums))
+                .onErrorReturn(throwable -> {
+                    if(ApiUtils.NETWORK_EXCEPTIONS.contains(throwable.getClass())){
+                        return getMusicDao().getAlbums();
+                    }
+                    return null;
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(disposable -> {
                     mRefresher.setRefreshing(true);
@@ -86,6 +101,10 @@ public class AlbumsFragment extends Fragment implements SwipeRefreshLayout.OnRef
                     mErrorView.setVisibility(View.VISIBLE);
                     mRecyclerView.setVisibility(View.GONE);
                 });
+    }
+
+    private MusicDao getMusicDao(){
+        return ((App) getActivity().getApplication()).getDatabase().getMusicDao();
     }
 
 }
