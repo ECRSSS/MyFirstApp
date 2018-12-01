@@ -12,6 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -77,33 +83,21 @@ public class AlbumsFragment extends Fragment implements SwipeRefreshLayout.OnRef
     }
 
     private void getAlbums() {
-
-        ApiUtils.getApi("","",false).getAlbums().enqueue(new Callback<Albums>() {
-            @Override
-            public void onResponse(Call<Albums> call, Response<Albums> response) {
-                if (response.isSuccessful()) {
+        ApiUtils.getApi("", "", false).getAlbums()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(disposable -> {
+                    mRefresher.setRefreshing(true);
+                })
+                .doFinally(() -> mRefresher.setRefreshing(false))
+                .subscribe(albums -> {
                     mErrorView.setVisibility(View.GONE);
                     mRecyclerView.setVisibility(View.VISIBLE);
-                    mAlbumAdapter.addData(response.body().getData(), true);
-                } else {
+                    mAlbumAdapter.addData(albums.getData(), true);
+                }, throwable -> {
                     mErrorView.setVisibility(View.VISIBLE);
                     mRecyclerView.setVisibility(View.GONE);
-                    if(response.code()==401){
-                        Toast.makeText(getContext(),"Не авторизован", Toast.LENGTH_SHORT).show();
-                    }else if(response.code()==500){
-                        Toast.makeText(getContext(),"Внутренняя ошибка сервера", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                mRefresher.setRefreshing(false);
-            }
-
-            @Override
-            public void onFailure(Call<Albums> call, Throwable t) {
-                mErrorView.setVisibility(View.VISIBLE);
-                mRecyclerView.setVisibility(View.GONE);
-                mRefresher.setRefreshing(false);
-            }
-        });
+                });
     }
 
 }

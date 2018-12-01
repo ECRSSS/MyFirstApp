@@ -1,5 +1,7 @@
 package ru.qagods.myfirstapp.Api;
 
+import io.reactivex.Completable;
+import io.reactivex.Single;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -14,13 +16,13 @@ import ru.qagods.myfirstapp.model.User;
 public interface AcademyApi {
 
     @POST("registration")
-    Call<Void> registration(@Body User.DataBean userData);
+    Completable registration(@Body User.DataBean userData);
 
     @GET("albums")
-    Call<Albums> getAlbums();
+    Single<Albums> getAlbums();
 
     @GET("albums/{id}")
-    Call<Album> getAlbum(@Path("id") int id);
+    Single<Album> getAlbum(@Path("id") int id);
 
     @GET("songs")
     Call<Songs.DataBean> getSongs();
@@ -29,7 +31,7 @@ public interface AcademyApi {
     Call<Song> getSong(@Path("id") int id);
 
     @GET("user")
-    Call<User> getUser();
+    Single<User> getUser();
 
 
 }
