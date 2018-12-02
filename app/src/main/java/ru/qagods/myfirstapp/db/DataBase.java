@@ -5,8 +5,9 @@ import android.arch.persistence.room.RoomDatabase;
 
 
 import ru.qagods.myfirstapp.model.Album;
+import ru.qagods.myfirstapp.model.Song;
 
-@Database(entities = {Album.class}, version = 1)
+@Database(entities = {Album.class,Song.class}, version = 1)
 public abstract class DataBase extends RoomDatabase {
     public abstract MusicDao getMusicDao();
 }

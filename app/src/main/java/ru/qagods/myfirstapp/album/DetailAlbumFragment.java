@@ -12,10 +12,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import ru.qagods.myfirstapp.R;
+import ru.qagods.myfirstapp.application.App;
 import ru.qagods.myfirstapp.model.Album;
+import ru.qagods.myfirstapp.model.Song;
 import ru.qagods.myfirstapp.utils.ApiUtils;
 
 public class DetailAlbumFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
@@ -25,6 +31,8 @@ public class DetailAlbumFragment extends Fragment implements SwipeRefreshLayout.
     private SwipeRefreshLayout mRefresher;
     private View mErrorView;
     private Album mAlbum;
+
+    private App app;
 
     @NonNull
     private final SongsAdapter mSongsAdapter = new SongsAdapter();
@@ -47,6 +55,7 @@ public class DetailAlbumFragment extends Fragment implements SwipeRefreshLayout.
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        app=(App)getActivity().getApplication();
         mRecyclerView = view.findViewById(R.id.recycler);
         mRefresher = view.findViewById(R.id.refresher);
         mRefresher.setOnRefreshListener(this);
@@ -79,6 +88,22 @@ public class DetailAlbumFragment extends Fragment implements SwipeRefreshLayout.
 
         ApiUtils.getApi("", "", false).getAlbum(mAlbum.getId())
                 .subscribeOn(Schedulers.io())
+                .doOnSuccess(new Consumer<Album>() {
+                    @Override
+                    public void accept(Album album) throws Exception {
+                        List<Song> songs=album.getSongs();
+                        songs.forEach(s->s.setAlbumkey(album.getId()));
+                        app.getMusicDao().insertSongs(songs);
+                    }
+                })
+                .onErrorReturn(throwable -> {
+                    if(ApiUtils.NETWORK_EXCEPTIONS.contains(throwable.getClass())){
+                        Album album=new Album();
+                        album.setSongs(app.getMusicDao().getSongsById(mAlbum.getId()));
+                        return album;
+                    }
+                    return null;
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(disposable -> mRefresher.setRefreshing(true))
                 .doFinally(() -> mRefresher.setRefreshing(false))

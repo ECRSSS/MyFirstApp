@@ -4,6 +4,7 @@ import android.app.Application;
 import android.arch.persistence.room.Room;
 
 import ru.qagods.myfirstapp.db.DataBase;
+import ru.qagods.myfirstapp.db.MusicDao;
 
 
 public class App extends Application {
@@ -21,5 +22,9 @@ public class App extends Application {
 
     public DataBase getDatabase() {
         return mDatabase;
+    }
+
+    public MusicDao getMusicDao(){
+        return getDatabase().getMusicDao();
     }
 }

@@ -19,7 +19,7 @@ public class Album implements Serializable {
      * release_date : 2018-11-28T19:59:15.279Z
      */
     @PrimaryKey
-    @ColumnInfo(name = "id")
+    @ColumnInfo(name = "albumid")
     @SerializedName("id")
     private int mId;
     @ColumnInfo(name = "name")

@@ -31,6 +31,7 @@ public class AlbumsFragment extends Fragment implements SwipeRefreshLayout.OnRef
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mRefresher;
     private View mErrorView;
+    private App app;
 
     @NonNull
     private final AlbumsAdapter mAlbumAdapter = new AlbumsAdapter(album -> {
@@ -52,6 +53,7 @@ public class AlbumsFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        app=(App)getActivity().getApplication();
         mRecyclerView = view.findViewById(R.id.recycler);
         mRefresher = view.findViewById(R.id.refresher);
         mRefresher.setOnRefreshListener(this);
@@ -81,10 +83,10 @@ public class AlbumsFragment extends Fragment implements SwipeRefreshLayout.OnRef
     private void getAlbums() {
         ApiUtils.getApi("", "", false).getAlbums()
                 .subscribeOn(Schedulers.io())
-                .doOnSuccess(albums -> getMusicDao().insertAlbums(albums))
+                .doOnSuccess(albums -> app.getMusicDao().insertAlbums(albums))
                 .onErrorReturn(throwable -> {
                     if(ApiUtils.NETWORK_EXCEPTIONS.contains(throwable.getClass())){
-                        return getMusicDao().getAlbums();
+                        return app.getMusicDao().getAlbums();
                     }
                     return null;
                 })
@@ -103,8 +105,5 @@ public class AlbumsFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 });
     }
 
-    private MusicDao getMusicDao(){
-        return ((App) getActivity().getApplication()).getDatabase().getMusicDao();
-    }
 
 }
