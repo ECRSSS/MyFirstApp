@@ -8,11 +8,12 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-
-import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -20,6 +21,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import ru.qagods.myfirstapp.R;
 import ru.qagods.myfirstapp.application.App;
+import ru.qagods.myfirstapp.comments.CommentsFragment;
 import ru.qagods.myfirstapp.model.Album;
 import ru.qagods.myfirstapp.model.Song;
 import ru.qagods.myfirstapp.utils.ApiUtils;
@@ -54,6 +56,12 @@ public class DetailAlbumFragment extends Fragment implements SwipeRefreshLayout.
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         app=(App)getActivity().getApplication();
         mRecyclerView = view.findViewById(R.id.recycler);
@@ -82,6 +90,22 @@ public class DetailAlbumFragment extends Fragment implements SwipeRefreshLayout.
             mRefresher.setRefreshing(true);
             getAlbum();
         });
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.detalized_albm_menu,menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==R.id.goToComments){
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container,CommentsFragment.newInstance(mAlbum.getId()))
+                    .addToBackStack(CommentsFragment.class.getSimpleName())
+                    .commit();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void getAlbum() {

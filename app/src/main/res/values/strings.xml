@@ -17,4 +17,5 @@
     <string name="et_name_hint">Имя</string>
     <string name="enqueue_error">Ошибка запроса</string>
     <string name="name">Name</string>
+    <string name="comments_menu_item_text">Комментарии</string>
 </resources>
