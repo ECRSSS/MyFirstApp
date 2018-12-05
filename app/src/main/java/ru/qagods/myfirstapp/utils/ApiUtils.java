@@ -55,13 +55,12 @@ public class ApiUtils {
         return okHttpClient;
     }
 
-    public static Retrofit getRetrofit(final String email,final String password,boolean newInstance) {
-        if(gson==null){
-            gson=new Gson();
+    public static Retrofit getRetrofit(final String email, final String password, boolean newInstance) {
+        if (gson == null) {
+            gson = new Gson();
         }
-        if (retrofit == null || newInstance == true) {
+        if (retrofit == null || newInstance) {
             retrofit = new Retrofit.Builder().baseUrl(BuildConfig.SERVER_URL)
-                    //need for interceptors
                     .client(getBasicAuthClient(email, password, newInstance))
                     .addConverterFactory(new DataConverterFactory())
                     .addConverterFactory(GsonConverterFactory.create(gson))
@@ -71,9 +70,18 @@ public class ApiUtils {
         return retrofit;
     }
 
-    public static AcademyApi getApi(final String email,final String password,boolean newInstance){
-        if(api==null || newInstance==true){
-            api=getRetrofit(email,password,newInstance).create(AcademyApi.class);
+    public static AcademyApi getApiRxWithoutDataConverter() {
+        Retrofit retro = new Retrofit.Builder().baseUrl(BuildConfig.SERVER_URL)
+                .client(getBasicAuthClient("", "", false))
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build();
+        return retro.create(AcademyApi.class);
+    }
+
+    public static AcademyApi getApiRx(final String email, final String password, boolean newInstance) {
+        if (api == null || newInstance == true) {
+            api = getRetrofit(email, password, newInstance).create(AcademyApi.class);
         }
         return api;
     }

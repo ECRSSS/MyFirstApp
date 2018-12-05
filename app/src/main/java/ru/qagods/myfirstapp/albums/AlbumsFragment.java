@@ -12,16 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.List;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import ru.qagods.myfirstapp.R;
 import ru.qagods.myfirstapp.album.DetailAlbumFragment;
 import ru.qagods.myfirstapp.application.App;
-import ru.qagods.myfirstapp.db.MusicDao;
-import ru.qagods.myfirstapp.model.Album;
 import ru.qagods.myfirstapp.utils.ApiUtils;
 
 
@@ -81,7 +76,7 @@ public class AlbumsFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     @SuppressLint("CheckResult")
     private void getAlbums() {
-        ApiUtils.getApi("", "", false).getAlbums()
+        ApiUtils.getApiRx("", "", false).getAlbums()
                 .subscribeOn(Schedulers.io())
                 .doOnSuccess(albums -> app.getMusicDao().insertAlbums(albums))
                 .onErrorReturn(throwable -> {

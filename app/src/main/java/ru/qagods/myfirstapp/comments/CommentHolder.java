@@ -1,17 +1,15 @@
 package ru.qagods.myfirstapp.comments;
 
 import android.icu.util.Calendar;
-import android.icu.util.GregorianCalendar;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import ru.qagods.myfirstapp.R;
-import ru.qagods.myfirstapp.model.Comment;
+import ru.qagods.myfirstapp.model.comment.Comment;
 
 public class CommentHolder extends RecyclerView.ViewHolder {
 

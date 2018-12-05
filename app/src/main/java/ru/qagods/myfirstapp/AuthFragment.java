@@ -1,7 +1,6 @@
 package ru.qagods.myfirstapp;
 
 import android.content.Intent;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -18,7 +17,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 import ru.qagods.myfirstapp.albums.AlbumsActivity;
@@ -49,7 +47,7 @@ public class AuthFragment extends Fragment {
             User user = null;
 
 
-            ApiUtils.getApi(mLoginField.getText().toString(), mPasswordField.getText().toString(), true)
+            ApiUtils.getApiRx(mLoginField.getText().toString(), mPasswordField.getText().toString(), true)
                     .getUser().subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new DisposableSingleObserver<User>() {

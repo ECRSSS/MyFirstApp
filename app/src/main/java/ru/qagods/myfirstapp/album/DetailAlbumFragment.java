@@ -110,7 +110,7 @@ public class DetailAlbumFragment extends Fragment implements SwipeRefreshLayout.
 
     private void getAlbum() {
 
-        ApiUtils.getApi("", "", false).getAlbum(mAlbum.getId())
+        ApiUtils.getApiRx("", "", false).getAlbum(mAlbum.getId())
                 .subscribeOn(Schedulers.io())
                 .doOnSuccess(new Consumer<Album>() {
                     @Override

@@ -5,14 +5,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ru.qagods.myfirstapp.R;
-import ru.qagods.myfirstapp.album.SongsHolder;
-import ru.qagods.myfirstapp.model.Comment;
-import ru.qagods.myfirstapp.model.Song;
+import ru.qagods.myfirstapp.model.comment.Comment;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentHolder> {
 

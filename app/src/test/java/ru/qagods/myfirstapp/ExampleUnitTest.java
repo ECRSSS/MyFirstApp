@@ -6,17 +6,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import ru.qagods.myfirstapp.model.Comment;
-import ru.qagods.myfirstapp.utils.ApiUtils;
-
-import static org.junit.Assert.*;
 
 /**
  * Example local unit test, which will execute on the development machine (host).

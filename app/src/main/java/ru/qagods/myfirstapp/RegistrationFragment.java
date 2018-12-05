@@ -1,7 +1,6 @@
 package ru.qagods.myfirstapp;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -17,8 +16,6 @@ import android.widget.Toast;
 
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import ru.qagods.myfirstapp.model.User;
@@ -40,16 +37,15 @@ public class RegistrationFragment extends Fragment {
             if (isInputValid()) {
                 User user = new User(mNewEmail.getText().toString(), mNewName.getText().toString()
                         , mNewPassword.getText().toString());
-                ApiUtils.getApi("", "", false).registration(user.getData())
+                ApiUtils.getApiRx("", "", false).registration(user.getData())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(() -> {
-                            showMessage("Успешная регистрация");
-                            getFragmentManager().popBackStack();
-                        }, throwable -> showMessage("Ошибка запроса")
+                                    showMessage("Успешная регистрация");
+                                    getFragmentManager().popBackStack();
+                                }, throwable -> showMessage("Ошибка запроса")
                         );
             }
-
         }
     };
 

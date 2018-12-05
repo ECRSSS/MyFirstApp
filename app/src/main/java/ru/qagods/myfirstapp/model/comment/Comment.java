@@ -1,4 +1,4 @@
-package ru.qagods.myfirstapp.model;
+package ru.qagods.myfirstapp.model.comment;
 
 import com.google.gson.annotations.SerializedName;
 
