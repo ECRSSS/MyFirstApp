@@ -1,6 +1,8 @@
 package ru.qagods.myfirstapp.comments;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,10 +24,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import ru.qagods.myfirstapp.R;
+import ru.qagods.myfirstapp.application.App;
 import ru.qagods.myfirstapp.model.comment.Comment;
 import ru.qagods.myfirstapp.model.comment.PostComment;
+import ru.qagods.myfirstapp.model.comment.PostCommentResponce;
 import ru.qagods.myfirstapp.utils.ApiUtils;
 
 public class CommentsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
@@ -43,6 +48,8 @@ public class CommentsFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     private EditText mNewComment;
     private Button mPostButton;
+
+    private App app;
 
     public static CommentsFragment newInstance(int albumId) {
         Bundle args = new Bundle();
@@ -65,9 +72,18 @@ public class CommentsFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         ApiUtils.getApiRx("", "", false).getComments()
                 .subscribeOn(Schedulers.io())
+                .doOnSuccess(comments -> app.getMusicDao().insertComments(comments))
+                .onErrorReturn(throwable -> {
+                    if (ApiUtils.NETWORK_EXCEPTIONS.contains(throwable.getClass())) {
+                        getActivity().runOnUiThread(() -> Toast.makeText(getActivity(),"Подключение отсутсвует",Toast.LENGTH_SHORT).show());
+                        return app.getMusicDao().getCommentsByAlbumId(mAlbumId);
+                    }
+                    return null;
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(disposable -> mRefresher.setRefreshing(true))
                 .doFinally(() -> mRefresher.setRefreshing(false))
+
                 .subscribe(comments -> {
                     comments = comments.stream().filter(c -> c.getAlbumId() == mAlbumId).collect(Collectors.toList());
                     mErrorView.setVisibility(View.GONE);
@@ -78,7 +94,7 @@ public class CommentsFragment extends Fragment implements SwipeRefreshLayout.OnR
                     } else {
                         if (mCommentAdapter.getItemCount() == lastCommentsCount) {
                             Toast.makeText(getActivity(), "Новых комментариев нет", Toast.LENGTH_SHORT).show();
-                        }else {
+                        } else {
                             Toast.makeText(getActivity(), "Комментарии обновлены", Toast.LENGTH_SHORT).show();
                         }
                         lastCommentsCount = mCommentAdapter.getItemCount();
@@ -87,9 +103,6 @@ public class CommentsFragment extends Fragment implements SwipeRefreshLayout.OnR
                         mNoCommentsView.setVisibility(View.VISIBLE);
                         mRecyclerView.setVisibility(View.GONE);
                     }
-                }, throwable -> {
-                    mErrorView.setVisibility(View.VISIBLE);
-                    mRecyclerView.setVisibility(View.GONE);
                 });
     }
 
@@ -100,6 +113,7 @@ public class CommentsFragment extends Fragment implements SwipeRefreshLayout.OnR
         getActivity().setTitle("Комментарии к альбому");
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(mCommentAdapter);
+        app = (App) getActivity().getApplication();
         onRefresh();
     }
 
@@ -118,26 +132,21 @@ public class CommentsFragment extends Fragment implements SwipeRefreshLayout.OnR
         mNoCommentsView = view.findViewById(R.id.no_comments_view);
 
         mNewComment = view.findViewById(R.id.et_new_comment);
-        mNewComment.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    mPostButton.callOnClick();
-                    return true;
+        mNewComment.setOnKeyListener((v, keyCode, event) -> {
+            if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                    (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                mPostButton.callOnClick();
+                return true;
 
-                }
-                return false;
-        }});
+            }
+            return false;
+        });
         mPostButton = view.findViewById(R.id.btn_send_comment);
-        mPostButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (TextUtils.isEmpty(mNewComment.getText().toString())) {
-                    Toast.makeText(getActivity(), "Сообщение пусто", Toast.LENGTH_SHORT).show();
-                } else {
-                    postMessage(mNewComment.getText().toString());
-                }
+        mPostButton.setOnClickListener(v -> {
+            if (TextUtils.isEmpty(mNewComment.getText().toString())) {
+                Toast.makeText(getActivity(), "Сообщение пусто", Toast.LENGTH_SHORT).show();
+            } else {
+                postMessage(mNewComment.getText().toString());
             }
         });
     }
@@ -159,6 +168,9 @@ public class CommentsFragment extends Fragment implements SwipeRefreshLayout.OnR
     private void getMessage(int id) {
         ApiUtils.getApiRx("", "", false).getCommentById(id)
                 .subscribeOn(Schedulers.io())
+                .doOnSuccess(comment -> {
+                    app.getMusicDao().insertComment(comment);
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(disposable -> mRefresher.setRefreshing(true))
                 .doFinally(() -> mRefresher.setRefreshing(false))
@@ -166,7 +178,7 @@ public class CommentsFragment extends Fragment implements SwipeRefreshLayout.OnR
                     List<Comment> comments = new ArrayList<>();
                     comments.add(comment);
                     mCommentAdapter.addData(comments, false);
-                    lastCommentsCount=mCommentAdapter.getItemCount();
+                    lastCommentsCount = mCommentAdapter.getItemCount();
                     mRecyclerView.setVisibility(View.VISIBLE);
                     mNoCommentsView.setVisibility(View.GONE);
                 }, throwable -> {

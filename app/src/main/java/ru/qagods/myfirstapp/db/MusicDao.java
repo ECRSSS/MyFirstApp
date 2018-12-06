@@ -10,6 +10,7 @@ import java.util.List;
 
 import ru.qagods.myfirstapp.model.Album;
 import ru.qagods.myfirstapp.model.Song;
+import ru.qagods.myfirstapp.model.comment.Comment;
 
 @Dao
 public interface MusicDao {
@@ -28,7 +29,16 @@ public interface MusicDao {
 
     @Query("SELECT * FROM song where albumkey=:albumkey")
     List<Song> getSongsById(int albumkey);
-    //удалить альбом
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertComments(List<Comment> comments);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertComment(Comment comment);
+
+    @Query("SELECT * FROM comment where albumId=:albumkey")
+    List<Comment> getCommentsByAlbumId(int albumkey);
+
     @Delete
     void deleteAlbum(Album album);
 

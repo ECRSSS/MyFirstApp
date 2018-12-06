@@ -1,18 +1,28 @@
 package ru.qagods.myfirstapp.model.comment;
 
-import com.google.gson.annotations.SerializedName;
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 
+import com.google.gson.annotations.SerializedName;
+@Entity
 public class Comment {
 
     @SerializedName("id")
+    @PrimaryKey
+    @ColumnInfo(name = "id")
     private int mId;
     @SerializedName("album_id")
+    @ColumnInfo(name = "albumId")
     private int mAlbumId;
     @SerializedName("text")
+    @ColumnInfo(name = "text")
     private String mText;
     @SerializedName("author")
+    @ColumnInfo(name = "author")
     private String mAuthor;
     @SerializedName("timestamp")
+    @ColumnInfo(name = "timestamp")
     private String mTimestamp;
 
     public int getId() {
